@@ -1,10 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+import time
 
 options = Options()
 options.headless = True
 driver = webdriver.Chrome(options=options)
 driver.get("https://fmdataba.com/21/l/2613/premier-league/best-players/1")
+time.sleep(2.5) #2.5 saniye sayfanın yüklenmesini bekle
 
 table = (driver.find_element_by_xpath("/html/body/div[3]/div[2]/div[1]/div[2]/div[2]/div[1]/table/tbody"))
 rows = table.find_elements_by_tag_name("tr")
