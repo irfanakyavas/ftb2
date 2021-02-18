@@ -8,7 +8,7 @@ options.headless = True
 driver = webdriver.Chrome(options=options)
 
 BASE_URL = "https://fmdataba.com/21/l/2613/premier-league/best-players/"
-# premier lig oyuncuları linkteki için toplam sayfa sayısı 
+# premier lig oyuncuları için linkteki toplam sayfa sayısı 
 MAX_PAGE_INDEX = 12
 
 
