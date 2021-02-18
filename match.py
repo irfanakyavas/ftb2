@@ -22,3 +22,6 @@ class Match:
         self.dangerous_attacks = [0, 0]
         self.home_team_lineup = []
         self.away_team_lineup = []
+
+    def __str__(self):
+        return f'{self.home_team.team_name} vs. {self.away_team.team_name} ({self.scores[0]}-{self.scores[1]})'
