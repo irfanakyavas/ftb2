@@ -3,12 +3,26 @@ import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+import pymysql.cursors
+import json
+import attrs_scraper
+
+USERNAME = ""
+PASSWORD = ""
+DB_NAME = ""
+db = pymysql.connect(host='localhost',
+                     user=USERNAME,
+                     password=PASSWORD,
+                     db=DB_NAME,
+                     charset='utf8mb4',
+                     cursorclass=pymysql.cursors.DictCursor)
+cursor = db.cursor()
+
 options = Options()
 options.headless = True
 driver = webdriver.Chrome(options=options)
 
 BASE_URL = "https://fmdataba.com/21/l/2613/premier-league/best-players/"
-# premier lig oyuncuları için linkteki toplam sayfa sayısı 
 MAX_PAGE_INDEX = 12
 
 
@@ -40,10 +54,20 @@ def get_attrs(pageIndex):
             if index > 6:
                 player.append(element.text)
         if len(player) > 0:
-            print(player)
+            return (player)
 
 
-for index in range(MAX_PAGE_INDEX + 1):
-    get_attrs(index)
+def get_players():
+    for index in range(MAX_PAGE_INDEX + 1):
+        player = get_attrs(index)
+        if player[1] == "Manchester Ci":
+            player[1] = "Manchester City"
 
-driver.quit()
+        query = cursor.execute('INSERT INTO players VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
+                               (player[0], player[1], int(player[2]), int(player[3]), int(player[4]), int(player[5]), int(player[6]), int(player[7])))
+        print(str(query) + " added")
+
+    db.commit()
+    driver.quit()
+
+get_players()
