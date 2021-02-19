@@ -1,5 +1,6 @@
 from mongoengine import *
 from team import TeamDocument
+import json
 
 
 class MatchDocument(Document):
@@ -55,3 +56,6 @@ class Match:
 
     def __str__(self):
         return f'{self.home_team.team_name} vs. {self.away_team.team_name} ({self.scores[0]}-{self.scores[1]})'
+
+    def lineups_to_json(self):
+        return [json.dumps(self.home_team_lineup), json.dumps(self.away_team_lineup)]

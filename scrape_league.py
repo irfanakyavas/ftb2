@@ -102,7 +102,7 @@ def parse_statistics(stat_rows, match):
 
 def match_id_to_match(matchid):
     driver.get(f"https://www.flashscore.com/match/{matchid}/#match-statistics;0")
-    time.sleep(1.25)
+    time.sleep(2)
 
     home_team = Team.get_or_create_team(driver.find_element_by_class_name("team-text.tname-home").find_element_by_class_name(
             "participant-imglink").text)
@@ -203,10 +203,9 @@ def scrape_league(driver_type, country, league, use_full_names=False):
     all_match_ids = list(map(html_to_matchids, all_matches_elements))
 
     if use_full_names:
-        all_matches = list(map(match_id_to_match_full_names, all_match_ids[:3]))
+        all_matches = list(map(match_id_to_match_full_names, all_match_ids))
     else:
-        all_matches = list(map(match_id_to_match, all_match_ids[
-                                                  :3]))  # Tüm maçları almak istiyorsan [:3] ü kaldır tüm match id leri gezsin baya uzun sürüyo ama oluyo
+        all_matches = list(map(match_id_to_match, all_match_ids[:25]))  # Tüm maçları almak istiyorsan [:3] ü kaldır tüm match id leri gezsin baya uzun sürüyo ama oluyo
     return all_matches
 
 # https://www.flashscore.com/match/[matchid]/#match-summary
