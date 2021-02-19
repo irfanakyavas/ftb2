@@ -1,3 +1,33 @@
+from mongoengine import *
+from team import TeamDocument
+
+
+class MatchDocument(Document):
+    home_team = ReferenceField(TeamDocument)
+    away_team = ReferenceField(TeamDocument)
+
+    home_team_lineup = ListField(max_length=11)
+    away_team_lineup = ListField(max_length=11)
+
+    scores = ListField(max_length=2)
+    ball_possession = ListField(max_length=2)
+    goal_attempts = ListField(max_length=2)
+    shots_on_goal = ListField(max_length=2)
+    shots_off_goal = ListField(max_length=2)
+    blocked_shots = ListField(max_length=2)
+    free_kicks = ListField(max_length=2)
+    corner_kicks = ListField(max_length=2)
+    offsides = ListField(max_length=2)
+    goalkeeper_saves = ListField(max_length=2)
+    fouls = ListField(max_length=2)
+    yellow_cards = ListField(max_length=2)
+    red_cards = ListField(max_length=2)
+    total_passes = ListField(max_length=2)
+    tackles = ListField(max_length=2)
+    attacks = ListField(max_length=2)
+    dangerous_attacks = ListField(max_length=2)
+
+
 class Match:
 
     def __init__(self, home_team, away_team):

@@ -1,4 +1,9 @@
-from enum import Enum
+from mongoengine import *
+
+
+class TeamDocument(Document):
+    team_name = StringField(required=True)
+
 
 class Team:
 
@@ -6,7 +11,6 @@ class Team:
 
     def __init__(self, team_name):
         self.team_name = team_name
-        self.players = []
         self.matches = []
 
     @staticmethod
@@ -14,13 +18,6 @@ class Team:
         if Team.all_teams.get(team_name) is (False or None):
             return Team(team_name)
         return Team.all_teams.get(team_name)
-
-    def add_player(self, player):
-        self.players.append(player)
-
-    def add_players(self, players):
-        for plr in players:
-            self.players.append(plr)
 
     def to_string(self):
         return 'Team Name : %25s' % (self.team_name)
