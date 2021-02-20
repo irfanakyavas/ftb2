@@ -11,7 +11,7 @@ model = tf.keras.Sequential([
 # RMSprop and Adadelta denenecek,
 model.compile(optimizer = 'adam',loss = 'mean_absolute_error',metrics=['accuracy'])
 
-model_path = "/content/savedModel.h5"
+model_path = "savedModel.h5"
 model.save(model_path)
 
 example_data = np.array([1.6,-3,3,0.4,1.4,1.5],ndmin=2)
