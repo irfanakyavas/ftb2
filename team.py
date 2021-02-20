@@ -1,10 +1,3 @@
-from mongoengine import *
-
-
-class TeamDocument(Document):
-    team_name = StringField(required=True)
-
-
 class Team:
 
     all_teams = {}
@@ -19,5 +12,8 @@ class Team:
             return Team(team_name)
         return Team.all_teams.get(team_name)
 
-    def to_string(self):
-        return 'Team Name : %25s' % (self.team_name)
+    def __str__(self):
+        s = '-------------------------------\nTeam Name : %25s\nMatches:\n' % (self.team_name)
+        for match in self.matches:
+            s = s + match + "\n"
+        return s
