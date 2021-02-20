@@ -2,21 +2,25 @@ import time
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+import mariadb
+import sys
 
-import pymysql.cursors
-import json
-import attrs_scraper
+DB_NAME = "football"
+# Connect to MariaDB Platform
+try:
+    db = mariadb.connect(
+        user="root",
+        password="",
+        host="127.0.0.1",
+        port=3307,
+        database=DB_NAME
+    )
+except mariadb.Error as e:
+    print(f"Error connecting to MariaDB Platform: {e}")
+    sys.exit(1)
 
-USERNAME = ""
-PASSWORD = ""
-DB_NAME = ""
-db = pymysql.connect(host='localhost',
-                     user=USERNAME,
-                     password=PASSWORD,
-                     db=DB_NAME,
-                     charset='utf8mb4',
-                     cursorclass=pymysql.cursors.DictCursor)
 cursor = db.cursor()
+db.autocommit = False
 
 options = Options()
 options.headless = True
@@ -38,7 +42,8 @@ def get_attrs(pageIndex):
 
     table = driver.find_element_by_xpath("/html/body/div[3]/div[2]/div[1]/div[2]/div[2]/div[1]/table/tbody")
     rows = table.find_elements_by_tag_name("tr")
-
+    players = list()
+    print(type(rows))
     for row in rows:
         player = list()
         elements = row.find_elements_by_tag_name("td")
@@ -54,20 +59,28 @@ def get_attrs(pageIndex):
             if index > 6:
                 player.append(element.text)
         if len(player) > 0:
-            return (player)
-
+            players.append(player)
+    driver.quit()
+    return players
 
 def get_players():
-    for index in range(MAX_PAGE_INDEX + 1):
-        player = get_attrs(index)
-        if player[1] == "Manchester Ci":
-            player[1] = "Manchester City"
+    # MAX_PAGE_INDEX + 1
+    for index in range(1,3):
+        players = get_attrs(index)
+        for player in players:
+            if player[1] == "Manchester Ci":
+                player[1] = "Manchester City"
+            else:pass
+            print(player)
+            try:
+                query = cursor.execute('INSERT INTO players VALUES(?,?,?,?,?,?,?,?,?)',
+                        ("NULL", player[0], player[1], int(player[2]), int(player[3]), int(player[4]),
+                            int(player[5]), int(player[6]), int(player[7])))
+                print(str(query), player[0], "added")
 
-        query = cursor.execute('INSERT INTO players VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
-                               (player[0], player[1], int(player[2]), int(player[3]), int(player[4]), int(player[5]), int(player[6]), int(player[7])))
-        print(str(query) + " added")
-
+            except:
+                print("Error")
     db.commit()
-    driver.quit()
 
-get_players()
+#get_players()
+print(get_attrs(1))
