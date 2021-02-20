@@ -15,5 +15,5 @@ class Team:
     def __str__(self):
         s = '-------------------------------\nTeam Name : %25s\nMatches:\n' % (self.team_name)
         for match in self.matches:
-            s = s + match + "\n"
+            s = s + match.__str__() + "\n"
         return s
