@@ -3,6 +3,8 @@ import keras
 from tensorflow.keras.models import load_model
 import numpy as np
 
+X_test = pd.read_csv("X_test.csv")
+y_test = pd.read_csv("y_test.csv")
 
 model = tf.keras.models.load_model("resultPredV4.h5", custom_objects={'relu6': tf.nn.relu6})
 
