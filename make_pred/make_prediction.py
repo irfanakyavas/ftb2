@@ -3,6 +3,11 @@ import keras
 from tensorflow.keras.models import load_model
 import numpy as np
 
+"""
+Expected data format to make prediction:
+data = np.array([1,1,1,1,1,1], ndmin=2)
+"""
+
 X_test = pd.read_csv("X_test.csv")
 y_test = pd.read_csv("y_test.csv")
 
