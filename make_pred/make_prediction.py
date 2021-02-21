@@ -3,23 +3,12 @@ import keras
 from tensorflow.keras.models import load_model
 import numpy as np
 
-model = tf.keras.Sequential([
-    tf.keras.layers.Dense(10, activation=tf.nn.tanh, input_shape=(6,)),
-    tf.keras.layers.Dense(1)
-])
 
-# RMSprop and Adadelta denenecek,
-model.compile(optimizer = 'adam',loss = 'mean_absolute_error',metrics=['accuracy'])
+model = tf.keras.models.load_model("resultPredV4.h5", custom_objects={'relu6': tf.nn.relu6})
 
-model_path = "savedModel.h5"
-model.save(model_path)
-
-example_data = np.array([1.6,-3,3,0.4,1.4,1.5],ndmin=2)
-pred = model.predict(example_data)
-if pred < 0.55 and pred > -0.55:
-  print("Predicted result: DRAW")
-if pred >= 0.55:
-  print("Predicted result: HOME WIN")
-if pred <= -0.55:
-  print("Predicted result: AWAY WIN")
-
+eval["preds"] = get_result(nmodel.predict(X_test))
+correct = 0
+for i in y_test.index:
+  if eval.result[i] == eval.preds[i]:
+    correct+=1
+print(f"{correct/len(y_test.index)}")
