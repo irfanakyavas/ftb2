@@ -1,29 +1,11 @@
 import json, sys, mariadb, csv
 import numpy as np, pandas as pd
+from sql_connection import SQL_Connection
 
-DB_NAME = "football"
-
-try:
-    db = mariadb.connect(
-        user="root",
-        password="",
-        host="127.0.0.1",
-        port=3307,
-        database=DB_NAME
-    )
-except mariadb.Error as e:
-    print(f"Error connecting to MariaDB Platform: {e}")
-    sys.exit(1)
-
-# Get Cursor
-cursor = db.cursor()
-
-
-
-
+sql = SQL_Connection.get_or_init_sql_connection()
 
 def calculate_teams(id):
-    lineups = get_lineups(id)
+    lineups = sql.load_match_by_id(id)
     home_name, home_team = lineups[0], lineups[2]
     away_name, away_team = lineups[1], lineups[3]
     match_result = lineups[4]

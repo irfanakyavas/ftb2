@@ -1,7 +1,6 @@
 import json
 from enum import Enum
 from typing import List
-
 from team import Team
 
 

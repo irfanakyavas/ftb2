@@ -17,7 +17,8 @@ class Logger:
         )
         self.ScrapingLogger = logging.getLogger("[WEB_SCRAPING]")
         self.DatabaseLogger = logging.getLogger("[DATABASE_CONNECTION]")
-        self.DatabaseLogger = logging.getLogger("[PLAYER_SCRAPING]")
+        self.PlayerScrapingLogger = logging.getLogger("[PLAYER_SCRAPING]")
+        self.ConfigurationLogger = logging.getLogger("[CONFIGURATION]")
 
     def set_scraping_log_level(self, log_level: Union[int, str]):
         self.ScrapingLogger.log(level=logging.CRITICAL, msg=f" Web Scraping Logger's level was changed from {self.ScrapingLogger.level} to {log_level}")

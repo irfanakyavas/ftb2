@@ -5,7 +5,8 @@ import time
 from selenium.webdriver.support import wait
 import sys
 from team import *
-from match import *
+from match import Match
+from match import MatchResult
 from lxml import html
 import requests
 from enum import Enum
@@ -215,15 +216,18 @@ class MatchDataScraper:
         while True:
             try:
                 show_more_button = self.driver.find_element_by_class_name("event__more.event__more--static")
+                show_more_button.click()
+                time.sleep(1)
             except ElementClickInterceptedException:
                 SCRAPE_LOGGER.error(f"Cookie consent banner somehow appeared again. Trying to remove it again.")
                 self.remove_cookie_banner()
                 time.sleep(0.1)
+                continue
+            except NoSuchElementException:
+                SCRAPE_LOGGER.info(f"WebDriver revealed all matches, {num_pages} of match pages were revealed after {num_pages - 1} button clicks")
+                break
             else:
                 num_pages = num_pages + 1
-                break
-
-        SCRAPE_LOGGER.info(f"WebDriver revealed all matches, {num_pages} of match pages were revealed after {num_pages - 1} button clicks")
 
         SCRAPE_LOGGER.info(f"WebDriver will now collect all match elements for further processing to get match ids")
         all_matches_elements = all_matches_box.find_elements_by_class_name(
@@ -242,5 +246,3 @@ class MatchDataScraper:
                            all_match_ids[scrape_range]]
         SCRAPE_LOGGER.info(f"Scraping completed")
         return all_matches
-
-    # https://www.flashscore.com/match/[matchid]/#match-summary
