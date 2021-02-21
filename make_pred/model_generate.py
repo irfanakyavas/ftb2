@@ -8,10 +8,16 @@ from tensorflow.keras.models import load_model
 
 data = pd.read_csv("/content/PL_data.csv")
 
+"""
 X = data[["attack","skill","movement",'power','mentality','defending']]
 y = data[["home_goals","away_goals"]]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=45)
+"""
+X_train = pd.read_csv("X_train.csv")
+X_test = pd.read_csv("X_test.csv")
+y_train = pd.read_csv("y_train.csv")
+y_test = pd.read_csv("y_test.csv")
 
 def get_result(preds):
   predicted_results = np.array([])
