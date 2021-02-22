@@ -5,23 +5,6 @@ from selenium.webdriver.chrome.options import Options
 import mariadb
 import sys
 
-DB_NAME = "football"
-# Connect to MariaDB Platform
-try:
-    db = mariadb.connect(
-        user="root",
-        password="",
-        host="127.0.0.1",
-        port=3307,
-        database=DB_NAME
-    )
-except mariadb.Error as e:
-    print(f"Error connecting to MariaDB Platform: {e}")
-    sys.exit(1)
-
-cursor = db.cursor()
-db.autocommit = False
-
 options = Options()
 options.headless = True
 driver = webdriver.Chrome(options=options)
@@ -63,24 +46,18 @@ def get_attrs(pageIndex):
     driver.quit()
     return players
 
+
 def get_players():
     # MAX_PAGE_INDEX + 1
-    for index in range(1,3):
+    for index in range(1, 3):
         players = get_attrs(index)
         for player in players:
             if player[1] == "Manchester Ci":
                 player[1] = "Manchester City"
-            else:pass
+            else:
+                pass
             print(player)
-            try:
-                query = cursor.execute('INSERT INTO players VALUES(?,?,?,?,?,?,?,?,?)',
-                        ("NULL", player[0], player[1], int(player[2]), int(player[3]), int(player[4]),
-                            int(player[5]), int(player[6]), int(player[7])))
-                print(str(query), player[0], "added")
+            #TODO: save player into db
 
-            except:
-                print("Error")
-    db.commit()
-
-#get_players()
+# get_players()
 print(get_attrs(1))
