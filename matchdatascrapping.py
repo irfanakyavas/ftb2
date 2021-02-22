@@ -200,9 +200,9 @@ class MatchDataScraper:
 
     def scrape_league(self, league: League, scrape_range: slice = slice(0, None), use_full_names=False):
 
-        SCRAPE_LOGGER.info(f"scrape_league was called on {league.value} for {scrape_range.__str__()}")
+        SCRAPE_LOGGER.info(f"scrape_league was called on {league.value['matches']} for {scrape_range.__str__()}")
         scraping_start_time = time.time()
-        self.driver.get(url=f"https://www.flashscore.com/football/{league.value[0]}/{league.value[1]}/results/")
+        self.driver.get(url=f"https://www.flashscore.com/football/{league.value['matches']['country']}/{league.value['matches']['league_name']}/results/")
 
         SCRAPE_LOGGER.info(f"WebDriver is now waiting for the cookie consent banner to appear")
         wait.WebDriverWait(driver=self.driver, timeout=1000).until(
@@ -247,5 +247,5 @@ class MatchDataScraper:
             all_matches = [self.match_id_to_match(matchid=match_id, use_full_names=False) for match_id in
                            all_match_ids[scrape_range]]
         scraping_time_total = (time.time() - scraping_start_time)
-        SCRAPE_LOGGER.info(f"Scraping of {len(all_matches)} matches from {league.value[0] + '/' + league.value[1]} was completed in {scraping_time_total} seconds (Avg. {scraping_time_total/len(all_matches)} seconds per match)")
+        SCRAPE_LOGGER.info(f"Scraping of {len(all_matches)} matches from {league.value['matches']['country'] + '/' + league.value['matches']['league_name']} was completed in {scraping_time_total} seconds (Avg. {scraping_time_total/len(all_matches)} seconds per match)")
         return all_matches

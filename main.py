@@ -6,7 +6,7 @@ from logger import Logger
 import logging
 import time
 from scrapeoptions import DriverType
-
+from scrapeoptions import League
 
 logger_instance = Logger()
 MainLogger = logging.getLogger("[MAIN]")
@@ -32,7 +32,8 @@ elif config_handler.scrape_webdriver == "CHROME":
 manu_players = sql.load_players_by_team_name("Manchester Utd") #şimdi API'ı kullanabilirsin
 print(manu_players[0])
 #scraper = MatchDataScraper(SCRAPING_WEBDRIVER, config_handler.scrape_is_headless)
-
+scrape_edilecek_lig = League.EN_PREMIER_LEAGUE
+print("lig id: " + scrape_edilecek_lig.value['players']['league_id'] + " lig adı: " + scrape_edilecek_lig.value['players']['league_name'])
 #start_time = time.time()
 #all_matches = scraper.scrape_league(MatchDataScraper.League.EN_PREMIER_LEAGUE, scrape_range=slice(0, 3))
 #for match in all_matches:
