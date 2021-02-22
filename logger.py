@@ -15,6 +15,7 @@ class Logger:
             level=logging.INFO,
             format = '%(asctime)s - %(name)s - %(levelname)s: %(message)s',
         )
+        self.MainLogger = logging.getLogger("[MAIN]")
         self.ScrapingLogger = logging.getLogger("[WEB_SCRAPING]")
         self.DatabaseLogger = logging.getLogger("[DATABASE_CONNECTION]")
         self.PlayerScrapingLogger = logging.getLogger("[PLAYER_SCRAPING]")
