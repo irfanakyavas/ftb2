@@ -86,7 +86,7 @@ class SQLConnection():
 
         return return_list if len(return_list) > 1 else return_list[0]
 
-    def parse_matches_from_sql_cursor(self, cursor: mariadb.connection.cursor) -> List[Match]:
+    def parse_matches_from_sql_cursor(self, cursor) -> List[Match]:
         return_list = []
         for (match_id, home_team_name, home_team_id, away_team_name, away_team_id, home_goals, away_goals,
              home_possession, away_possession, home_goal_attempts, away_goal_attempts, home_shots_on_goal,

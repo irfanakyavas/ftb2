@@ -11,11 +11,13 @@ class ConfigHandler:
     database_use = True
     disable_logging = False
     logging_level = 10
-    database_address = "127.0.0.1"
-    database_port = 3306
-    database_name = "ftb2"
-    database_username = "admin"
-    database_password = "admin"
+    database_address = ""
+    database_port = 0
+    database_name = ""
+    database_username = ""
+    database_password = ""
+    scrape_webdriver = ""
+    scrape_is_headless = ""
 
     def __init__(self):
         configuration_logger.info("Initializing configuration loader")
@@ -32,12 +34,15 @@ class ConfigHandler:
             ConfigHandler.database_name = config['DATABASE']['database_name']
             ConfigHandler.database_username = config['DATABASE']['database_username']
             ConfigHandler.database_password = config['DATABASE']['database_password']
+            ConfigHandler.scrape_webdriver = config['SCRAPING']['webdriver_type']
+            ConfigHandler.scrape_is_headless = config['SCRAPING']['webdriver_is_headless']
         else:
             configuration_logger.info(f"Configuration file {CONFIG_FILE_NAME} not found, writing default file.")
             print(f"No configuration file {CONFIG_FILE_NAME} found, writing default settings.")
             config['LOGGING'] = {'disable_logging': '0', 'logging_level': '10'}
             config['DATABASE'] = {'use_database': '1', 'database_address': '127.0.0.1', 'database_port': '3306',
                                   'database_name': 'ftb2', 'database_username': 'admin', 'database_password': 'admin'}
+            config['SCRAPING'] = {'webdriver_type': 'FIREFOX', 'webdriver_is_headless': '0'}
             with open(CONFIG_FILE_NAME, 'w') as configfile:
                 config.write(configfile)
 

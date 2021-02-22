@@ -19,8 +19,8 @@ SCRAPE_LOGGER = logging.getLogger("[WEB_SCRAPING]")
 
 class MatchDataScraper:
 
-    def __init__(self, driver_type: DriverType):
-        global SCRAPE_LOGGER
+    def __init__(self, driver_type: DriverType, scraping_is_headless: str):
+
         # Logging & initialization for Firefox webdriver
         if driver_type == MatchDataScraper.DriverType.FIREFOX:
             SCRAPE_LOGGER.info("Firefox Web Driver was chosen for Selenium, trying to initialize.")
@@ -56,6 +56,8 @@ class MatchDataScraper:
                 sys.exit(1)
             else:
                 SCRAPE_LOGGER.info("Opera Web Driver was successfully initialized.")
+
+
 
     def html_to_matchids(self, elem):
         return elem.get_attribute("id")[4:]  # First 4 characters of flashscore.com match ids have no use
