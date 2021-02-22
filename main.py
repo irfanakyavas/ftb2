@@ -29,8 +29,8 @@ elif config_handler.scrape_webdriver == "OPERA":
 elif config_handler.scrape_webdriver == "CHROME":
     SCRAPING_WEBDRIVER = DriverType.CHROME
 
-sql.load_players_by_team_name("Manchester Utd") #şimdi API'ı kullanabilirsin
-
+manu_players = sql.load_players_by_team_name("Manchester Utd") #şimdi API'ı kullanabilirsin
+print(manu_players[0])
 #scraper = MatchDataScraper(SCRAPING_WEBDRIVER, config_handler.scrape_is_headless)
 
 #start_time = time.time()
