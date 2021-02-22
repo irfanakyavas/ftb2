@@ -8,7 +8,8 @@ from match import Match
 from match import MatchResult
 from lxml import html
 import requests
-from enum import Enum
+from main import League
+from main import DriverType
 from logger import Logger
 import logging
 from selenium.common.exceptions import *
@@ -17,14 +18,6 @@ SCRAPE_LOGGER = logging.getLogger("[WEB_SCRAPING]")
 
 
 class MatchDataScraper:
-    class League(Enum):
-        EN_PREMIER_LEAGUE = ("england", "premier-league")
-        TR_SUPER_LEAGUE = ("turkey", "super-lig")
-
-    class DriverType(Enum):
-        FIREFOX = 1
-        CHROME = 2
-        OPERA = 3
 
     def __init__(self, driver_type: DriverType):
         global SCRAPE_LOGGER
