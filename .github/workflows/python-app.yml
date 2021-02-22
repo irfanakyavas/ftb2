@@ -23,6 +23,7 @@ jobs:
         python-version: 3.7.10
     - name: Install dependencies
       run: |
+        sudo apt-get install libmariadb3 libmariadb-dev
         python -m pip install --upgrade pip
         pip install flake8 pytest mariadb selenium numpy pandas lxml
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
