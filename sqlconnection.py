@@ -6,6 +6,7 @@ from team import Team
 from player import Player
 import json
 from config import ConfigHandler
+import csv
 
 DATABASE_LOGGER = logging.getLogger("[DATABASE_CONNECTION]")
 
@@ -64,6 +65,25 @@ class SQLConnection():
             DATABASE_LOGGER.info(
                 f"Successfully connected to database at {self.login_info.sql_host}:{self.login_info.sql_port}.")
 
+    def parse_players_from_sql_cursor(self, cursor) -> Union[List[Player], Player, None]:
+        return_list = []
+        for (player_id, player_name, player_team_id, player_team_name, player_attack, player_skill, player_movement, player_power, player_mentality, player_defending) in cursor:
+            p = Player.get_or_create_player(player_team_name, player_name)
+            p.attributes['player_attack'] = player_attack
+            p.attributes['player_skill'] = player_skill
+            p.attributes['player_movement'] = player_movement
+            p.attributes['player_power'] = player_power
+            p.attributes['player_mentality'] = player_mentality
+            p.attributes['player_defending'] = player_defending
+            p.player_id = player_id
+            p.player_team_id = player_team_id
+            return_list.append(p)
+
+        if len(return_list) is 0:
+            return None
+
+        return return_list if len(return_list) > 1 else return_list[0]
+
     def parse_matches_from_sql_cursor(self, cursor) -> List[Match]:
         return_list = []
         for (match_id, home_team_name, home_team_id, away_team_name, away_team_id, home_goals, away_goals,
@@ -109,10 +129,15 @@ class SQLConnection():
 
     def update_team_id_name_mapping_on_db(self):
         cursor = self._SQL_Connection.cursor()
+
         cursor.execute(
             "UPDATE matches SET home_team_id = (SELECT team_id FROM teams WHERE matches.home_team_name = teams.team_name)")
         cursor.execute(
             "UPDATE matches SET away_team_id = (SELECT team_id FROM teams WHERE matches.away_team_name = teams.team_name)")
+        cursor.execute(
+            "UPDATE players SET player_team_id = (SELECT team_id FROM teams WHERE players.player_team_name = teams.team_name)")
+
+        self._SQL_Connection.commit()
 
     def save_match(self, match: Match):
         DATABASE_LOGGER.info(f"Saving a match into database")
@@ -178,9 +203,46 @@ class SQLConnection():
         for team in team_list:
             self.save_team(team)
 
-    def load_player_by_id(self, player_id):
+    def save_player(self, player: Player):
+        DATABASE_LOGGER.info(f"Saving a player into database")
+        cursor = self._SQL_Connection.cursor()
 
-    def load_player_by_team_name(self, player_team_name):
+        query = """INSERT INTO players (player_name, player_team_id, player_team_name, player_attack, player_skill, player_movement, player_power, player_mentality, player_defending) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
+        cursor.execute(query, player.player_name, SQLConnection.team_id_map[player.player_team_name],
+                       player.player_team_name, player.attributes['player_attack'], player.attributes['player_skill'],
+                       player.attributes['player_movement'], player.attributes['player_power'],
+                       player.attributes['player_mentality'], player.attributes['player_defending'])
+
+        self._SQL_Connection.commit()
+
+    def load_player_by_id(self, player_id: int) -> Player:
+        cursor = self._SQL_Connection.cursor()
+        cursor.execute(f"SELECT * FROM players WHERE player_id={str(player_id)}")
+        return self.parse_players_from_sql_cursor(cursor)
+
+    def load_players_by_team_name(self, player_team_name):
+        cursor = self._SQL_Connection.cursor()
+        cursor.execute(f"SELECT * FROM players WHERE player_team_id={SQLConnection.team_id_map[player_team_name]}")
+        return self.parse_players_from_sql_cursor(cursor)
+
+    def write_all_matches_to_csv(self):
+        c = csv.writer(open('ftb2-matches.csv', 'w', encoding='utf-16'))
+
+        cursor = self._SQL_Connection.cursor()
+        cursor.execute(f"SELECT * FROM matches")
+
+        result = cursor.fetchall()
+        c.writerows(result)
+
+    def write_all_players_to_csv(self):
+        c = csv.writer(open('ftb2-players.csv', 'w', encoding='utf-16'))
+
+        cursor = self._SQL_Connection.cursor()
+        cursor.execute(f"SELECT * FROM players")
+
+        result = cursor.fetchall()
+        c.writerows(result)
 
 
