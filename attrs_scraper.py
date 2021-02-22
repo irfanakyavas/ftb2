@@ -63,7 +63,7 @@ class PlayerDataScraper:
             else:
                 PlayerDataScraper.SCRAPE_LOGGER.info("Opera Web Driver was successfully initialized.")
 
-    def create_url(BASE_URL, pageIndex):
+    def create_url(self, BASE_URL, pageIndex):
         url = BASE_URL + str(pageIndex)
         return url
 
@@ -73,7 +73,7 @@ class PlayerDataScraper:
         url = self.create_url(PlayerDataScraper.base_url, pageIndex)
         self.driver.get(url)
         print(url, "is opening")
-        time.sleep(2)
+        time.sleep(3)
 
         table = self.driver.find_element_by_xpath("/html/body/div[3]/div[2]/div[1]/div[2]/div[2]/div[1]/table/tbody")
         rows = table.find_elements_by_tag_name("tr")
@@ -95,7 +95,9 @@ class PlayerDataScraper:
                     p.attributes[index - 7] = element.text
             if p.player_name != '':
                 players.append(p)
-        self.driver.quit()
+            time.sleep(0.5)
+        time.sleep(1)
+
         return players
 
     def get_players(self):
@@ -117,9 +119,9 @@ class PlayerDataScraper:
 
     def scrape_players(self, league: League, max_page_index: int):
         PlayerDataScraper.MAX_PAGE_INDEX = max_page_index
-        PlayerDataScraper.league_id = league['players']['league_id']
-        PlayerDataScraper.league_name = league['players']['league_name']
-        PlayerDataScraper.fm_version = league['players']['fm_version']
+        PlayerDataScraper.league_id = league.value['players']['league_id']
+        PlayerDataScraper.league_name = league.value['players']['league_name']
+        PlayerDataScraper.fm_version = league.value['players']['fm_version']
         PlayerDataScraper.base_url = f"https://fmdataba.com/{PlayerDataScraper.fm_version}/l/" \
                                      f"{PlayerDataScraper.league_id}/{PlayerDataScraper.league_name}/best-players/"
 
