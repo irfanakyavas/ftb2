@@ -40,8 +40,10 @@ class SQLConnection():
         if SQLConnection.sql_instance is not None:
             return SQLConnection
         if sql_login is None:
-            DATABASE_LOGGER.error("No SQL login object was received for get_or_init_sql_connection")
-            raise RuntimeError("No SQL login object was received for get_or_init_sql_connection")
+            DATABASE_LOGGER.error("No SQL login object was received for get_or_init_sql_connection, you have to call "
+                                  "it with SQLLogin object once before this")
+            raise RuntimeError("No SQL login object was received for get_or_init_sql_connection, you have to call "
+                               "it with SQLLogin object once before this")
         else:
             return SQLConnection(sql_login)
 
