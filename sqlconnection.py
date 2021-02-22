@@ -1,12 +1,13 @@
-import logging
-import mariadb
-from typing import List, Union, Optional
-from match import *
-from team import Team
-from player import Player
-import json
-from config import ConfigHandler
 import csv
+import logging
+from typing import Union, Optional
+
+import mariadb
+
+from config import ConfigHandler
+from match import *
+from player import Player
+from team import Team
 
 DATABASE_LOGGER = logging.getLogger("[DATABASE_CONNECTION]")
 

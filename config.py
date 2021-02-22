@@ -1,7 +1,6 @@
 import logging
 from configparser import ConfigParser
 from os import path
-from typing import Dict
 
 CONFIG_FILE_NAME = "ftb2.conf"
 configuration_logger = logging.getLogger("[CONFIGURATION]")

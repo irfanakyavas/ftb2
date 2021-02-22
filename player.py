@@ -1,5 +1,6 @@
-from team import Team
 import hashlib
+
+from team import Team
 
 
 class Player:

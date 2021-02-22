@@ -1,31 +1,38 @@
-import selenium
-from selenium import webdriver
-import time
-from selenium.webdriver.support import wait
+import logging
 import sys
-from team import *
+import time
+from typing import Union
+
+import requests
+import selenium
+from lxml import html
+from selenium import webdriver
+from selenium.common.exceptions import *
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.opera.options import Options as OperaOptions
+from selenium.webdriver.support import wait
+
+from logger import Logger
 from match import Match
 from match import MatchResult
-from lxml import html
-import requests
-from scrapeoptions import League
 from scrapeoptions import DriverType
-from logger import Logger
-import logging
-from selenium.common.exceptions import *
+from scrapeoptions import League
+from team import *
 
 SCRAPE_LOGGER = logging.getLogger("[WEB_SCRAPING]")
 
 
 class MatchDataScraper:
 
-    def __init__(self, driver_type: DriverType, scraping_is_headless: str):
+    def __init__(self, driver_type: DriverType,
+                 driver_options: Union[FirefoxOptions, OperaOptions, ChromeOptions, None]):
 
         # Logging & initialization for Firefox webdriver
-        if driver_type == MatchDataScraper.DriverType.FIREFOX:
+        if driver_type == DriverType.FIREFOX:
             SCRAPE_LOGGER.info("Firefox Web Driver was chosen for Selenium, trying to initialize.")
             try:
-                self.driver = selenium.webdriver.Firefox()
+                self.driver = selenium.webdriver.Firefox(options=driver_options)
             except selenium.common.exceptions.WebDriverException:
                 SCRAPE_LOGGER.critical(
                     "COULD NOT initialize Firefox Web Driver, is Firefox Web Driver present in path variable?.")
@@ -34,10 +41,10 @@ class MatchDataScraper:
                 SCRAPE_LOGGER.info("Firefox Web Driver was successfully initialized.")
 
         # Logging & initialization for Chrome webdriver
-        if driver_type == MatchDataScraper.DriverType.CHROME:
+        if driver_type == DriverType.CHROME:
             SCRAPE_LOGGER.info("Chrome Web Driver was chosen for Selenium, trying to initialize.")
             try:
-                self.driver = selenium.webdriver.Chrome()
+                self.driver = selenium.webdriver.Chrome(options=driver_options)
             except selenium.common.exceptions.WebDriverException:
                 SCRAPE_LOGGER.critical(
                     "COULD NOT initialize Chrome Web Driver, is Chrome Web Driver present in path variable?.")
@@ -46,18 +53,16 @@ class MatchDataScraper:
                 SCRAPE_LOGGER.info("Chrome Web Driver was successfully initialized.")
 
         # Logging & initialization for Opera webdriver
-        if driver_type == MatchDataScraper.DriverType.OPERA:
+        if driver_type == DriverType.OPERA:
             SCRAPE_LOGGER.info(logging.INFO, "Opera Web Driver was chosen for Selenium, trying to initialize.")
             try:
-                self.driver = selenium.webdriver.Opera()
+                self.driver = selenium.webdriver.Opera(options=driver_options)
             except selenium.common.exceptions.WebDriverException:
                 SCRAPE_LOGGER.critical(
                     "COULD NOT initialize Opera Web Driver, is Opera Web Driver present in path variable?.")
                 sys.exit(1)
             else:
                 SCRAPE_LOGGER.info("Opera Web Driver was successfully initialized.")
-
-
 
     def html_to_matchids(self, elem):
         return elem.get_attribute("id")[4:]  # First 4 characters of flashscore.com match ids have no use
@@ -202,7 +207,8 @@ class MatchDataScraper:
 
         SCRAPE_LOGGER.info(f"scrape_league was called on {league.value['matches']} for {scrape_range.__str__()}")
         scraping_start_time = time.time()
-        self.driver.get(url=f"https://www.flashscore.com/football/{league.value['matches']['country']}/{league.value['matches']['league_name']}/results/")
+        self.driver.get(
+            url=f"https://www.flashscore.com/football/{league.value['matches']['country']}/{league.value['matches']['league_name']}/results/")
 
         SCRAPE_LOGGER.info(f"WebDriver is now waiting for the cookie consent banner to appear")
         wait.WebDriverWait(driver=self.driver, timeout=1000).until(
@@ -247,5 +253,6 @@ class MatchDataScraper:
             all_matches = [self.match_id_to_match(matchid=match_id, use_full_names=False) for match_id in
                            all_match_ids[scrape_range]]
         scraping_time_total = (time.time() - scraping_start_time)
-        SCRAPE_LOGGER.info(f"Scraping of {len(all_matches)} matches from {league.value['matches']['country'] + '/' + league.value['matches']['league_name']} was completed in {scraping_time_total} seconds (Avg. {scraping_time_total/len(all_matches)} seconds per match)")
+        SCRAPE_LOGGER.info(
+            f"Scraping of {len(all_matches)} matches from {league.value['matches']['country'] + '/' + league.value['matches']['league_name']} was completed in {scraping_time_total} seconds (Avg. {scraping_time_total / len(all_matches)} seconds per match)")
         return all_matches
