@@ -177,3 +177,10 @@ class SQLConnection():
     def save_teams(self, team_list: List[Team]):
         for team in team_list:
             self.save_team(team)
+
+    def load_player_by_id(self, player_id):
+
+    def load_player_by_team_name(self, player_team_name):
+
+
+

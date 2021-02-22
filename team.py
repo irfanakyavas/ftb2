@@ -5,10 +5,11 @@ class Team:
     def __init__(self, team_name):
         self.team_name = team_name
         self.matches = []
+        Team.all_teams[team_name] = self
 
     @staticmethod
     def get_or_create_team(team_name):
-        if Team.all_teams.get(team_name) is (False or None):
+        if Team.all_teams.get(team_name) is None:
             return Team(team_name)
         return Team.all_teams.get(team_name)
 

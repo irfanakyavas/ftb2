@@ -1,19 +1,27 @@
-class Player:
+from team import Team
+import hashlib
 
+
+class Player:
     all_players = {}
 
-    def __init__(self, team_name):
-        self.team_name = team_name
-        self.matches = []
+    def __init__(self, player_team_name, player_name):
+        self.player_team_name = player_team_name
+        self.player_name = player_name
+        Player.all_players[self.md5(player_team_name, player_name)] = self
 
     @staticmethod
-    def get_or_create_team(team_name):
-        if Team.all_teams.get(team_name) is (False or None):
-            return Team(team_name)
-        return Team.all_teams.get(team_name)
+    def get_or_create_player(player_team_name, player_name):
+        if Player.all_players.get(Player.md5(player_team_name, player_name)) is None:
+            return Player(player_name, player_team_name)
+        return Player.all_players.get(Player.md5(player_team_name, player_name))
+
+    def get_team(self):
+        return Team.all_teams.get(self.player_team_name)
 
     def __str__(self):
-        s = '-------------------------------\nTeam Name : %25s\nMatches:\n' % (self.team_name)
-        for match in self.matches:
-            s = s + match.__str__() + "\n"
-        return s
+        return 'Player: %15s, Team: %15s' % (self.player_name, self.player_team_name)
+
+    @staticmethod
+    def md5(player_team_name, player_name):
+        return hashlib.md5(player_team_name + player_name)
