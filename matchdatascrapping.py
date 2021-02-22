@@ -8,8 +8,8 @@ from match import Match
 from match import MatchResult
 from lxml import html
 import requests
-from main import League
-from main import DriverType
+from scrapeoptions import League
+from scrapeoptions import DriverType
 from logger import Logger
 import logging
 from selenium.common.exceptions import *

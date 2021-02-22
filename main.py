@@ -1,22 +1,11 @@
-from enum import Enum
 import sqlconnection
 from matchdatascrapping import MatchDataScraper
 from sqlconnection import SQLConnection
 from config import ConfigHandler
-import logger
 from logger import Logger
 import logging
 import time
 
-
-class League(Enum):
-    EN_PREMIER_LEAGUE = ("england", "premier-league")
-    TR_SUPER_LEAGUE = ("turkey", "super-lig")
-
-class DriverType(Enum):
-    FIREFOX = 1
-    CHROME = 2
-    OPERA = 3
 
 logger_instance = Logger()
 MainLogger = logging.getLogger("[MAIN]")

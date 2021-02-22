@@ -1,6 +1,6 @@
 import logging
 import mariadb
-from typing import List, Union
+from typing import List, Union, Optional
 from match import *
 from team import Team
 from player import Player
@@ -67,7 +67,7 @@ class SQLConnection():
             DATABASE_LOGGER.info(
                 f"Successfully connected to database at {self.login_info.sql_host}:{self.login_info.sql_port}.")
 
-    def parse_players_from_sql_cursor(self, cursor) -> Union[List[Player], Player, None]:
+    def parse_players_from_sql_cursor(self, cursor) -> Optional[Union[List[Player], Player]]:
         return_list = []
         for (player_id, player_name, player_team_id, player_team_name, player_attack, player_skill, player_movement, player_power, player_mentality, player_defending) in cursor:
             p = Player.get_or_create_player(player_team_name, player_name)
@@ -86,7 +86,7 @@ class SQLConnection():
 
         return return_list if len(return_list) > 1 else return_list[0]
 
-    def parse_matches_from_sql_cursor(self, cursor) -> List[Match]:
+    def parse_matches_from_sql_cursor(self, cursor: mariadb.connection.cursor) -> List[Match]:
         return_list = []
         for (match_id, home_team_name, home_team_id, away_team_name, away_team_id, home_goals, away_goals,
              home_possession, away_possession, home_goal_attempts, away_goal_attempts, home_shots_on_goal,
@@ -185,7 +185,7 @@ class SQLConnection():
         for match in match_list:
             self.save_match(match)
 
-    def load_matches_by_club_name(self, club_name: str):
+    def load_matches_by_club_name(self, club_name: str) -> Optional[List[Match]]:
         cursor = self._SQL_Connection.cursor()
         cursor.execute(
             f"SELECT * FROM matches WHERE away_team_id={SQLConnection.team_id_map[club_name]} OR "
@@ -219,12 +219,12 @@ class SQLConnection():
 
         self._SQL_Connection.commit()
 
-    def load_player_by_id(self, player_id: int) -> Player:
+    def load_player_by_id(self, player_id: int) -> Optional[Player]:
         cursor = self._SQL_Connection.cursor()
         cursor.execute(f"SELECT * FROM players WHERE player_id={str(player_id)}")
         return self.parse_players_from_sql_cursor(cursor)
 
-    def load_players_by_team_name(self, player_team_name):
+    def load_players_by_team_name(self, player_team_name: str):
         cursor = self._SQL_Connection.cursor()
         cursor.execute(f"SELECT * FROM players WHERE player_team_id={SQLConnection.team_id_map[player_team_name]}")
         return self.parse_players_from_sql_cursor(cursor)
