@@ -29,7 +29,7 @@ elif config_handler.scrape_webdriver == "OPERA":
 elif config_handler.scrape_webdriver == "CHROME":
     SCRAPING_WEBDRIVER = DriverType.CHROME
 
-sql.load_team_id_map() #şimdi API'ı kullanabilirsin
+sql.load_players_by_team_name("Manchester Utd") #şimdi API'ı kullanabilirsin
 
 #scraper = MatchDataScraper(SCRAPING_WEBDRIVER, config_handler.scrape_is_headless)
 
