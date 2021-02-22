@@ -1,8 +1,8 @@
 import json, sys, mariadb, csv
 import numpy as np, pandas as pd
-from sql_connection import SQL_Connection
+from sqlconnection import SQLConnection
 
-sql = SQL_Connection.get_or_init_sql_connection()
+sql = SQLConnection.get_or_init_sql_connection()
 
 def calculate_teams(id):
     lineups = sql.load_match_by_id(id)

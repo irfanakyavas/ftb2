@@ -1,19 +1,19 @@
-import hashlib
-
-
 class Player:
-    all_players = dict()
 
-    def __init__(self, name, team):
-        self.team = None
-        self.name = name
-        Player.all_players[hashlib.md5(self.team.team_name + self.name)] = self
+    all_players = {}
+
+    def __init__(self, team_name):
+        self.team_name = team_name
+        self.matches = []
 
     @staticmethod
-    def get_or_create_player(name, team):
-        if hashlib.md5(team.team_name + name) in Player.all_players is False:
-            return Player(name, team)
-        return hashlib.md5(team.team_name + name) in Player.all_players
+    def get_or_create_team(team_name):
+        if Team.all_teams.get(team_name) is (False or None):
+            return Team(team_name)
+        return Team.all_teams.get(team_name)
 
-    def to_string(self):
-        return 'Player : %-17s Team : %-17s' % (self.name , self.team.team_name)
+    def __str__(self):
+        s = '-------------------------------\nTeam Name : %25s\nMatches:\n' % (self.team_name)
+        for match in self.matches:
+            s = s + match.__str__() + "\n"
+        return s

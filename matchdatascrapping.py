@@ -16,6 +16,7 @@ from selenium.common.exceptions import *
 
 SCRAPE_LOGGER = logging.getLogger("[WEB_SCRAPING]")
 
+
 class MatchDataScraper:
     class League(Enum):
         EN_PREMIER_LEAGUE = ("england", "premier-league")
@@ -34,7 +35,8 @@ class MatchDataScraper:
             try:
                 self.driver = selenium.webdriver.Firefox()
             except selenium.common.exceptions.WebDriverException:
-                SCRAPE_LOGGER.critical("COULD NOT initialize Firefox Web Driver, is Firefox Web Driver present in path variable?.")
+                SCRAPE_LOGGER.critical(
+                    "COULD NOT initialize Firefox Web Driver, is Firefox Web Driver present in path variable?.")
                 sys.exit(1)
             else:
                 SCRAPE_LOGGER.info("Firefox Web Driver was successfully initialized.")
@@ -45,7 +47,8 @@ class MatchDataScraper:
             try:
                 self.driver = selenium.webdriver.Chrome()
             except selenium.common.exceptions.WebDriverException:
-                SCRAPE_LOGGER.critical("COULD NOT initialize Chrome Web Driver, is Chrome Web Driver present in path variable?.")
+                SCRAPE_LOGGER.critical(
+                    "COULD NOT initialize Chrome Web Driver, is Chrome Web Driver present in path variable?.")
                 sys.exit(1)
             else:
                 SCRAPE_LOGGER.info("Chrome Web Driver was successfully initialized.")
@@ -56,7 +59,8 @@ class MatchDataScraper:
             try:
                 self.driver = selenium.webdriver.Opera()
             except selenium.common.exceptions.WebDriverException:
-                SCRAPE_LOGGER.critical("COULD NOT initialize Opera Web Driver, is Opera Web Driver present in path variable?.")
+                SCRAPE_LOGGER.critical(
+                    "COULD NOT initialize Opera Web Driver, is Opera Web Driver present in path variable?.")
                 sys.exit(1)
             else:
                 SCRAPE_LOGGER.info("Opera Web Driver was successfully initialized.")
@@ -205,7 +209,8 @@ class MatchDataScraper:
         self.driver.get(url=f"https://www.flashscore.com/football/{league.value[0]}/{league.value[1]}/results/")
 
         SCRAPE_LOGGER.info(f"WebDriver is now waiting for the cookie consent banner to appear")
-        wait.WebDriverWait(driver=self.driver, timeout=1000).until(lambda t: t.find_element_by_xpath('//*[@id="onetrust-banner-sdk"]'))
+        wait.WebDriverWait(driver=self.driver, timeout=1000).until(
+            lambda t: t.find_element_by_xpath('//*[@id="onetrust-banner-sdk"]'))
         self.remove_cookie_banner()
         SCRAPE_LOGGER.info(f"Removed the cookie consent banner")
 
@@ -224,7 +229,8 @@ class MatchDataScraper:
                 time.sleep(0.1)
                 continue
             except NoSuchElementException:
-                SCRAPE_LOGGER.info(f"WebDriver revealed all matches, {num_pages} of match pages were revealed after {num_pages - 1} button clicks")
+                SCRAPE_LOGGER.info(
+                    f"WebDriver revealed all matches, {num_pages} of match pages were revealed after {num_pages - 1} button clicks")
                 break
             else:
                 num_pages = num_pages + 1
