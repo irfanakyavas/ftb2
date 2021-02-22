@@ -1,7 +1,6 @@
 import selenium
 from selenium import webdriver
 import time
-
 from selenium.webdriver.support import wait
 import sys
 from team import *
@@ -155,6 +154,8 @@ class MatchDataScraper:
                     stat_row.find_element_by_class_name("statText.statText--awayValue").text)
 
     def match_id_to_match(self, matchid, use_full_names=False):
+        start_time = time.time()
+
         SCRAPE_LOGGER.info("Starting to parse a match, loading match page.")
         self.driver.get(f"https://www.flashscore.com/match/{matchid}/#match-statistics;0")
         time.sleep(2)
@@ -205,7 +206,7 @@ class MatchDataScraper:
     def scrape_league(self, league: League, scrape_range: slice = slice(0, None), use_full_names=False):
 
         SCRAPE_LOGGER.info(f"scrape_league was called on {league.value} for {scrape_range.__str__()}")
-
+        scraping_start_time = time.time()
         self.driver.get(url=f"https://www.flashscore.com/football/{league.value[0]}/{league.value[1]}/results/")
 
         SCRAPE_LOGGER.info(f"WebDriver is now waiting for the cookie consent banner to appear")
@@ -241,7 +242,7 @@ class MatchDataScraper:
 
         SCRAPE_LOGGER.info(f"Trying to map match elements to match ids")
         all_match_ids = list(map(self.html_to_matchids, all_matches_elements))
-        SCRAPE_LOGGER.info(f"Match id collection completed")
+        SCRAPE_LOGGER.info(f"Match id collection completed, {len(all_match_ids)} match ids were found.")
 
         SCRAPE_LOGGER.info(f"Trying to scrape lineup and statistics using match ids")
         if use_full_names:
@@ -250,5 +251,6 @@ class MatchDataScraper:
         else:
             all_matches = [self.match_id_to_match(matchid=match_id, use_full_names=False) for match_id in
                            all_match_ids[scrape_range]]
-        SCRAPE_LOGGER.info(f"Scraping completed")
+        scraping_time_total = (time.time() - scraping_start_time)
+        SCRAPE_LOGGER.info(f"Scraping of {len(all_matches)} matches from {league.value[0] + '/' + league.value[1]} was completed in {scraping_time_total} seconds (Avg. {scraping_time_total/len(all_matches)} seconds per match)")
         return all_matches
