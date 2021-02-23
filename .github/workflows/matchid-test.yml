@@ -4,10 +4,10 @@
 name: Test Match ID Scraping
 
 on:
-#  push:
-#    branches: [ releasecandidate ]
-#  pull_request:
-#    branches: [ releasecandidate ]
+  push:
+    branches: [ releasecandidate ]
+  pull_request:
+    branches: [ releasecandidate ]
   workflow_dispatch:
   
 jobs:
