@@ -25,7 +25,7 @@ def initialize_ftb2():
     global SCRAPING_WEBDRIVER
     global SCRAPING_WEBDRIVER_OPTIONS
 
-    if config_handler.database_use is '1':
+    if config_handler.database_use == '1':
         MainLogger.info("Connecting to SQL Database as specified by configuration file.")
         sql = SQLConnection.get_or_init_sql_connection(sqlconnection.from_config_handler())
         sql.load_team_id_map()
@@ -43,15 +43,16 @@ def initialize_ftb2():
         SCRAPING_WEBDRIVER = DriverType.CHROME
         SCRAPING_WEBDRIVER_OPTIONS = ChromeOptions()
 
-    SCRAPING_WEBDRIVER_OPTIONS.headless = True if config_handler.scrape_is_headless is "1" else False
+    SCRAPING_WEBDRIVER_OPTIONS.headless = True if config_handler.scrape_is_headless == "1" else False
 
 
 def main():
-    initialize_ftb2()
-    scraper = PlayerDataScraper(SCRAPING_WEBDRIVER, SCRAPING_WEBDRIVER_OPTIONS)
-    start_time = time.time()
-    all_players = scraper.scrape_players(League.EN_PREMIER_LEAGUE, 12)
-    for p in all_players:
+    #initialize_ftb2()
+    time_start = time.time()
+    scraper = PlayerDataScraper()
+    all_players_in_pl = scraper.scrape_players(League.EN_PREMIER_LEAGUE)
+    print(f"{len(all_players_in_pl)} players scraped in {time.time() - time_start} seconds")
+    for p in all_players_in_pl:
         print(p)
 
 

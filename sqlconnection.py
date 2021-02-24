@@ -82,7 +82,7 @@ class SQLConnection():
             p.player_team_id = player_team_id
             return_list.append(p)
 
-        if len(return_list) is 0:
+        if len(return_list) == 0:
             return None
 
         return return_list if len(return_list) > 1 else return_list[0]
