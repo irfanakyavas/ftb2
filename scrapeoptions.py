@@ -9,7 +9,10 @@ class League(Enum):
         'players': {
             'league_id': "2613", 'league_name': "premier-league", 'fm_version': '21',
             'team_names_fix_dict': {
-                'Manchester Un': 'Manchester Utd', 'Manchester Ci': 'Manchester City'
+                'Manchester Un': 'Manchester Utd',
+                'Manchester Ci': 'Manchester City',
+                'Crystal Palac': 'Crystal Palace',
+                'Sheffield Uni': 'Sheffield Utd'
             }
         }
     }
