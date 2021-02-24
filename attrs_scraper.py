@@ -52,8 +52,10 @@ class PlayerDataScraper:
             num_player_rows += 1
 
         if num_player_rows == 0:
-            if len(players_return_list) == 0:  # TODO: logla bunu hiç oyuncu yoksa bir şeyler ters gitmiştir
-                return None
+            if len(players_return_list) == 0:
+                SCRAPE_LOGGER.error("No player was found. Please check your connection.")
+                raise Exception("No player was found. Please check your connection.")
+                
             return players_return_list
 
         time.sleep(0.25)
