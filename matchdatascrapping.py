@@ -154,8 +154,6 @@ class MatchDataScraper:
                     stat_row.find_element_by_class_name("statText.statText--awayValue").text)
 
     def match_id_to_match(self, matchid, use_full_names=False):
-        start_time = time.time()
-
         SCRAPE_LOGGER.info("Starting to parse a match, loading match page.")
         self.driver.get(f"https://www.flashscore.com/match/{matchid}/#match-statistics;0")
         time.sleep(2)

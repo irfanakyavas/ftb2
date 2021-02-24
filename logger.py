@@ -10,7 +10,7 @@ class Logger:
     def __init__(self):
         launch_time = datetime.datetime.now()
         logging.basicConfig(
-            filename=f'ftb2-{launch_time.date().__str__()}-{launch_time.time().hour}-{launch_time.time().minute}-{launch_time.time().second}.log',
+            filename=f'logs/ftb2-{launch_time.date().__str__()}-{launch_time.time().hour}-{launch_time.time().minute}-{launch_time.time().second}.log',
             filemode='w',
             level=logging.INFO,
             format = '%(asctime)s - %(name)s - %(levelname)s: %(message)s',

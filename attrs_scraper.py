@@ -40,7 +40,7 @@ class PlayerDataScraper:
                 if player_team_name == team_name_to_fix:
                     player_team_name = team_name_fixed
 
-            p = Player(player_team_name=player_team_name, player_name=player_name)
+            p = Player.get_or_create_player(player_team_name=player_team_name, player_name=player_name)
 
             p.attributes['player_attack'] = int(player_row.find('.//td[8]/span').text)
             p.attributes['player_defending'] = int(player_row.find('.//td[9]/span').text)
@@ -56,7 +56,7 @@ class PlayerDataScraper:
                 return None
             return players_return_list
 
-        time.sleep(1)
+        time.sleep(0.25)
         return self.get_player_data(base_url=base_url, page_index=page_index + 1,
                                     players_return_list=players_return_list, team_names_fix_dict=team_names_fix_dict)
 

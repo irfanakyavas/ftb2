@@ -12,6 +12,7 @@ from logger import Logger
 from matchdatascrapping import MatchDataScraper
 from scrapeoptions import DriverType, League
 from sqlconnection import SQLConnection
+import utils
 
 SCRAPING_WEBDRIVER = None
 SCRAPING_WEBDRIVER_OPTIONS = None
@@ -47,13 +48,15 @@ def initialize_ftb2():
 
 
 def main():
-    #initialize_ftb2()
-    time_start = time.time()
-    scraper = PlayerDataScraper()
-    all_players_in_pl = scraper.scrape_players(League.EN_PREMIER_LEAGUE)
-    print(f"{len(all_players_in_pl)} players scraped in {time.time() - time_start} seconds")
-    for p in all_players_in_pl:
-        print(p)
+    initialize_ftb2()
+    print("ftb2 is initialized")
+    #scraper = PlayerDataScraper()
+    #all_players_in_pl = scraper.scrape_players(League.EN_PREMIER_LEAGUE)
+    #all_players_in_pl=utils.read_players_from_csv("ftb2-player-data.csv")
+    #print(f"{len(all_players_in_pl)} players scraped in {time.time() - time_start} seconds")
+    #for p in all_players_in_pl:
+    #    print(p)
+    #utils.write_players_to_csv()
 
 
 if __name__ == "__main__":
