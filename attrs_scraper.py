@@ -1,128 +1,70 @@
 import logging
-import sys
 import time
-from typing import Union
-
-import selenium
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.webdriver.opera.options import Options as OperaOptions
-
+from typing import List, Dict, Optional
 from player import Player
-from scrapeoptions import DriverType
 from scrapeoptions import League
+import requests
+import lxml
+from lxml import html
+from lxml.cssselect import CSSSelector
+from lxml import etree
 
 
 class PlayerDataScraper:
-    SCRAPE_LOGGER = logging.getLogger("WEB_SCRAPING")
-    MAX_PAGE_INDEX = 13
+    SCRAPE_LOGGER = logging.getLogger("[WEB_SCRAPING]")
 
-    base_url = None
-    league_id = None
-    league_name = None
-    fm_version = None
+    def __init__(self):
+        print("initializing player scrapper")
 
-    def __init__(self, driver_type: DriverType,
-                 driver_options: Union[FirefoxOptions, OperaOptions, ChromeOptions, None]):
+    def get_player_data(self, base_url: str, page_index: int = 0, players_return_list=None,
+                        team_names_fix_dict: Dict[str, str] = None) -> Optional[List[Player]]:
+        if players_return_list is None:
+            players_return_list = list()
 
-        # Logging & initialization for Firefox webdriver
-        if driver_type == DriverType.FIREFOX:
-            PlayerDataScraper.SCRAPE_LOGGER.info("Firefox Web Driver was chosen for Selenium, trying to initialize.")
-            try:
-                self.driver = selenium.webdriver.Firefox(options=driver_options)
-            except selenium.common.exceptions.WebDriverException:
-                PlayerDataScraper.SCRAPE_LOGGER.critical(
-                    "COULD NOT initialize Firefox Web Driver, is Firefox Web Driver present in path variable?.")
-                sys.exit(1)
-            else:
-                PlayerDataScraper.SCRAPE_LOGGER.info("Firefox Web Driver was successfully initialized.")
+        fake_useragent = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0'}
+        players_page = requests.get(base_url + str(page_index), headers=fake_useragent)
+        players_page_elements = html.fromstring(players_page.content)
+        players_table = players_page_elements.cssselect('.table-responsive > table:nth-child(1) > tbody:nth-child(2)')[
+            0]
+        num_player_rows = 0
 
-        # Logging & initialization for Chrome webdriver
-        if driver_type == DriverType.CHROME:
-            PlayerDataScraper.SCRAPE_LOGGER.info("Chrome Web Driver was chosen for Selenium, trying to initialize.")
-            try:
-                self.driver = selenium.webdriver.Chrome(options=driver_options)
-            except selenium.common.exceptions.WebDriverException:
-                PlayerDataScraper.SCRAPE_LOGGER.critical(
-                    "COULD NOT initialize Chrome Web Driver, is Chrome Web Driver present in path variable?.")
-                sys.exit(1)
-            else:
-                PlayerDataScraper.SCRAPE_LOGGER.info("Chrome Web Driver was successfully initialized.")
+        for player_row in players_table.iter("tr"):
+            if player_row.find('.//td[3]/a/strong') is None:
+                continue
 
-        # Logging & initialization for Opera webdriver
-        if driver_type == DriverType.OPERA:
-            PlayerDataScraper.SCRAPE_LOGGER.info(logging.INFO,
-                                                 "Opera Web Driver was chosen for Selenium, trying to initialize.")
-            try:
-                self.driver = selenium.webdriver.Opera(options=driver_options)
-            except selenium.common.exceptions.WebDriverException:
-                PlayerDataScraper.SCRAPE_LOGGER.critical(
-                    "COULD NOT initialize Opera Web Driver, is Opera Web Driver present in path variable?.")
-                sys.exit(1)
-            else:
-                PlayerDataScraper.SCRAPE_LOGGER.info("Opera Web Driver was successfully initialized.")
+            player_name = player_row.find('.//td[3]/a/strong').text
+            player_team_name = player_row.find('.//td[4]/a/span').text
 
-    def create_url(self, BASE_URL, pageIndex):
-        url = BASE_URL + str(pageIndex)
-        return url
+            for (team_name_to_fix, team_name_fixed) in team_names_fix_dict.items():
+                if player_team_name == team_name_to_fix:
+                    player_team_name = team_name_fixed
 
-    def get_attrs(self, pageIndex):
-        global club_name_container, player_name
+            p = Player(player_team_name=player_team_name, player_name=player_name)
 
-        url = self.create_url(PlayerDataScraper.base_url, pageIndex)
-        self.driver.get(url)
-        print(url, "is opening")
-        time.sleep(3)
+            p.attributes['player_attack'] = int(player_row.find('.//td[8]/span').text)
+            p.attributes['player_defending'] = int(player_row.find('.//td[9]/span').text)
+            p.attributes['player_skill'] = int(player_row.find('.//td[10]/span').text)
+            p.attributes['player_mentality'] = int(player_row.find('.//td[11]/span').text)
+            p.attributes['player_power'] = int(player_row.find('.//td[12]/span').text)
+            p.attributes['player_movement'] = int(player_row.find('.//td[13]/span').text)
+            players_return_list.append(p)
+            num_player_rows += 1
 
-        table = self.driver.find_element_by_xpath("/html/body/div[3]/div[2]/div[1]/div[2]/div[2]/div[1]/table/tbody")
-        rows = table.find_elements_by_tag_name("tr")
-        players = list()
+        if num_player_rows == 0:
+            if len(players_return_list) == 0:  # TODO: logla bunu hiç oyuncu yoksa bir şeyler ters gitmiştir
+                return None
+            return players_return_list
 
-        for row in rows:
-            p = Player(player_team_name='', player_name='')
-            elements = row.find_elements_by_tag_name("td")
-            for index, element in enumerate(elements):
-                if index == 2:
-                    player_name_container = element.find_element_by_tag_name("a")
-                    player_name = player_name_container.find_element_by_tag_name("strong")
-                    p.player_name = player_name.text
-                if index == 3:
-                    club_name_container = element.find_element_by_tag_name("a")
-                    p.player_team_name = club_name_container.text
-                # getting attributes except overall
-                if index > 6:
-                    p.attributes[index - 7] = element.text
-            if p.player_name != '':
-                players.append(p)
-            time.sleep(0.5)
         time.sleep(1)
+        return self.get_player_data(base_url=base_url, page_index=page_index + 1,
+                                    players_return_list=players_return_list, team_names_fix_dict=team_names_fix_dict)
 
-        return players
+    def scrape_players(self, league: League) -> Optional[List[Player]]:
+        fm_version = league.value['players']['fm_version']
+        league_id = league.value['players']['league_id']
+        league_name = league.value['players']['league_name']
 
-    def get_players(self):
-        # MAX_PAGE_INDEX + 1
-        return_players_list = []
-        for index in range(1, PlayerDataScraper.MAX_PAGE_INDEX):
-            players = self.get_attrs(index)
-            for player in players:
-                if player.player_team_name == "Manchester Ci":
-                    player.player_team_name = "Manchester City"
-                else:
-                    pass
-                try:
-                    return_players_list.append(player)
-                except:
-                    print("Error")
-
-        return return_players_list
-
-    def scrape_players(self, league: League, max_page_index: int):
-        PlayerDataScraper.MAX_PAGE_INDEX = max_page_index
-        PlayerDataScraper.league_id = league.value['players']['league_id']
-        PlayerDataScraper.league_name = league.value['players']['league_name']
-        PlayerDataScraper.fm_version = league.value['players']['fm_version']
-        PlayerDataScraper.base_url = f"https://fmdataba.com/{PlayerDataScraper.fm_version}/l/" \
-                                     f"{PlayerDataScraper.league_id}/{PlayerDataScraper.league_name}/best-players/"
-
-        return self.get_players()
+        base_url = f"https://fmdataba.com/{fm_version}/l/{league_id}/{league_name}/best-players/"
+        return self.get_player_data(base_url=base_url,
+                                    team_names_fix_dict=league.value['players']['team_names_fix_dict'])
